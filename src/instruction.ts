@@ -1,0 +1,45 @@
+export const enum Op {
+    PUSH_CONST,
+    MOV_CONST,
+    MOV_REG,
+
+    STR_CONST_TO_CONST,
+    STR_CONST_TO_REG,
+    STR_REG_TO_CONST,
+    STR_REG_TO_REG,
+
+    LDR_CONST,
+    LDR_REG,
+
+    INC,
+    DEC,
+
+    XOR_CONST, XOR_REG, 
+    OR_CONST, OR_REG,
+    AND_CONST, AND_REG,
+    SHR_CONST, SHR_REG, 
+    SHL_CONST, SHL_REG,
+    NOT_CONST, NOT_REG,
+
+    ADD_CONST, ADD_REG,
+    SUB_CONST, SUB_REG,
+    MULT_CONST, MULT_REG,
+
+    CALL,
+    CALL_JS_CONST,
+    CALL_JS_REG,
+
+    CMP_REG_CONST,
+    CMP_REG_REG,
+
+    BRANCH_COND_CONST,
+    BRANCH_COND_REG,
+    BRANCH_CONST,
+    BRANCH_REG,
+
+    CLEAR_FLAGS
+}
+
+export const enum BranchType {
+    EQ, LT, GT
+}

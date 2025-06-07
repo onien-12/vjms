@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "module": "ES2022",
+        "lib": ["ES2022", "dom"],
+        "outDir": "output",
+        "target": "ES2024",
+        "esModuleInterop": true,
+    },
+    "include": [
+        "src/**/*.ts"
+    ], 
+    "ts-node": {
+        "esm": true,
+        "experimentalSpecifierResolution": "node",
+    },
+}
