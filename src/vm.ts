@@ -19,6 +19,8 @@ const pushConst = (val: number) => {
 const branchCond = (type: BranchType, index: number) => {
     if (type == BranchType.EQ && regs[REG_FLAGS] & (1 << 0))
         regs[REG_IP] = index;
+    if (type == BranchType.NEQ && !(regs[REG_FLAGS] & (1 << 0)))
+        regs[REG_IP] = index;
     if (type == BranchType.LT && regs[REG_FLAGS] & (1 << 1))
         regs[REG_IP] = index;
     if (type == BranchType.GT && regs[REG_FLAGS] & (1 << 2))
@@ -42,6 +44,7 @@ export function start(prog: Array<number>, jsFuns: Array<Function> = []) {
         switch (opcode) {
             // push <const>
             case Op.PUSH_CONST: pushConst(advance(prog)); break;
+            case Op.PUSH_REG: pushConst(regs[advance(prog)]); break;
 
             // call <reg/const>
             case Op.CALL_JS_CONST: jsFuns[advance(prog)].call(null, regs[REG_SP]); break;

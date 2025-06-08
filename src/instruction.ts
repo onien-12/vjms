@@ -1,7 +1,6 @@
 export const enum Op {
-    PUSH_CONST,
-    MOV_CONST,
-    MOV_REG,
+    PUSH_CONST, PUSH_REG,
+    MOV_CONST, MOV_REG,
 
     STR_CONST_TO_CONST,
     STR_CONST_TO_REG,
@@ -41,5 +40,6 @@ export const enum Op {
 }
 
 export const enum BranchType {
-    EQ, LT, GT
+    EQ, NEQ,
+    LT, GT
 }
