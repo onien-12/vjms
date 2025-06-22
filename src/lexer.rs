@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, fs::canonicalize};
 
 #[derive(Debug)]
 pub enum Token {
@@ -13,6 +13,7 @@ pub struct Lexer {
     pub tokens: Vec<Token>,
     pub program: String,
     pub tok: usize,
+    pub current_id: String
 }
 
 impl Lexer {
@@ -20,7 +21,8 @@ impl Lexer {
         Self { 
             tokens: vec![],
             program: String::new(),
-            tok: 0
+            current_id: String::new(),
+            tok: 0,
         }
     }
 
@@ -57,17 +59,35 @@ impl Lexer {
         result
     }
 
-    fn skip_whitespace(&mut self) {
-        if self.tok >= self.program.len() - 1 { return }
-        let mut c = self.program.chars().nth(self.tok).unwrap();
-        while c == '\n' || c == '\t' || c == ' ' {
+    fn skip_number(&mut self, is_hex: bool) -> Option<String> {
+        if self.tok >= self.program.len() - 1 { return None }
+        
+        let mut result = String::new();
+        let mut c = self.curr_char();
+        while c == '0' || c == '1' || c == '2' || c == '3' ||
+              c == '4' || c == '5' || c == '6' || c ==  '7' || 
+              c == '8' || c == '9' || 
+              (is_hex && (
+                c == 'a' || c == 'b' || c == 'c' || c == 'd' || c == 'e' || c == 'f'
+              )) {
+            result.push(c);
             self.tok += 1;
-            c = self.program.chars().nth(self.tok).unwrap();
+            c = self.curr_char();
         }
+        self.tok -= 1;
+
+        Some(result)
     }
 
     fn curr_char(&self) -> char {
         self.program.chars().nth(self.tok).unwrap()
+    }
+
+    fn clear_current_id(&mut self) {
+        if self.current_id.len() > 0 {
+            self.tokens.push(Token::Id(self.current_id.clone()));
+            self.current_id.clear();
+        }
     }
 
     pub fn set_program(&mut self, program: String) {
@@ -75,14 +95,47 @@ impl Lexer {
     } 
     
     pub fn lex(&mut self) {
-        let mut id = self.skip_until_whitespace();
-        self.tokens.push(Token::Id(id.clone()));
-        self.skip_whitespace();
-        id = self.skip_until('(');
-        self.tokens.push(Token::Id(id.clone()));
-        self.tokens.push(Token::Symbol('('));
-        self.skip_until(')');
-        self.tokens.push(Token::Symbol(')'));
-        self.skip_whitespace();
+        let mut c = self.curr_char();
+        while self.tok < self.program.len() {
+            match c {
+                ' ' | '\n' | '\t' => self.clear_current_id(),
+
+                '(' | ')' | '[' | ']' | '{' | '}' | ';' => {
+                    self.clear_current_id();
+                    self.tokens.push(Token::Symbol(c));
+                },
+
+                '=' |  
+                '-' | '+' | '*' | '/'  | '%' | 
+                '!' | '|' | '&' | '^' | '~' => {
+                    self.clear_current_id();
+                    self.tok += 1;
+                    let next_char = self.curr_char();
+
+                    if c == '=' && next_char == '=' {
+                        self.tokens.push(Token::Eq());
+                    }
+                },
+
+                '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' => {
+                    if self.current_id.len() > 0 {
+                        self.current_id.push(c);
+                    } else {
+                        let num_str = self.skip_number(false).unwrap();
+                        self.tokens.push(Token::Num(num_str.parse::<usize>().unwrap()));
+                    }
+                },
+
+                '"' | '\'' => {
+                    self.clear_current_id();
+                },
+
+                _ => self.current_id.push(c) 
+            }
+            self.tok += 1;
+
+            if self.tok >= self.program.len() { break }
+            c = self.curr_char();
+        }
     }
 }
