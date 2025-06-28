@@ -1,6 +1,6 @@
 use std::{fmt, fs::canonicalize};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
     Symbol(char),
     Id(String), // if, else

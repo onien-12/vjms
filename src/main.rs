@@ -3,6 +3,8 @@ use crate::{assembler::Parser, lexer::Lexer};
 
 pub mod assembler;
 pub mod lexer;
+pub mod parser;
+pub mod ir;
 
 fn main() {
     // test_assembly()
